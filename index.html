@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WebLearn Interactive Classroom</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+/* Global Styles */
+body, html {
+  margin:0; padding:0;
+  font-family: 'Poppins', sans-serif;
+  min-height:100vh;
+  background: linear-gradient(270deg,#ff6b6b,#feca57,#48dbfb,#1dd1a1,#5f27cd);
+  background-size:1000% 1000%;
+  animation: gradient 25s ease infinite;
+  color:#fff;
+  overflow-x:hidden;
+}
+@keyframes gradient {
+  0% {background-position:0% 50%;}
+  50% {background-position:100% 50%;}
+  100% {background-position:0% 50%;}
+}
+.shape {
+  position:absolute; border-radius:50%; opacity:0.6;
+  animation: float 8s infinite ease-in-out;
+  filter: drop-shadow(0 0 15px rgba(255,255,255,0.5));
+}
+@keyframes float {
+  0%{transform:translateY(0) translateX(0);}
+  50%{transform:translateY(-40px) translateX(25px) rotate(45deg);}
+  100%{transform:translateY(0) translateX(0);}
+}
+.container { max-width:1100px; margin:auto; padding:2rem; text-align:center; position:relative; z-index:2; }
+header {
+  background: rgba(255,255,255,0.1); backdrop-filter: blur(15px);
+  padding:1.5rem; border-radius:0 0 30px 30px; box-shadow:0 8px 25px rgba(0,0,0,0.4);
+}
+header h1 {
+  margin:0; font-size:2.5rem; font-weight:700;
+  background: linear-gradient(90deg,#ff6b6b,#feca57,#48dbfb,#1dd1a1,#5f27cd);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  animation: rainbowText 5s linear infinite;
+}
+header p {margin:0; font-size:1.1rem; font-style:italic; color:#ffd700; margin-top:0.3rem;}
+.form-section {
+  max-width:450px; margin:auto; background: rgba(255,255,255,0.1); backdrop-filter: blur(15px);
+  padding:2rem; border-radius:25px; box-shadow:0 8px 25px rgba(0,0,0,0.5); transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.form-section:hover {transform: translateY(-5px); box-shadow:0 12px 30px rgba(0,0,0,0.6);}
+input {padding:0.9rem; border-radius:12px; border:none; font-size:1rem; margin-bottom:1rem; width:100%; background: rgba(255,255,255,0.15); color:#fff;}
+input::placeholder {color:#ddd;}
+#greetingContainer {
+  display:flex; align-items:center; gap:1rem; justify-content:center; margin-bottom:2rem;
+  animation:fadeIn 1s ease-in; display:none;
+}
+#userAvatar {width:90px; height:90px; border-radius:50%; border:3px solid #ffd700; box-shadow:0 0 20px #ffd700;}
+#userBadge {display:block; background:#ffd700; color:#333; font-weight:bold; padding:0.3rem 1rem; border-radius:15px; margin-top:0.3rem; box-shadow:0 0 15px #ffd700;}
+#greetingMessage {font-size:1.8rem; font-weight:700; animation: rainbowText 5s infinite linear; margin:0;}
+.username {color:#ffd700; font-weight:bold;}
+.class-section {display:none; margin-top:1.5rem;}
+.tabs {display:flex; gap:1rem; justify-content:center; margin-bottom:1.5rem; flex-wrap:wrap;}
+.tab-btn {
+  padding:0.8rem 1.5rem; border:none; cursor:pointer;
+  background: rgba(255,255,255,0.15); color:white; border-radius:15px; font-weight:600;
+  transition:0.3s; backdrop-filter: blur(10px);
+}
+.tab-btn.active {background: linear-gradient(90deg,#ff6b6b,#feca57,#48dbfb); color:#333; box-shadow:0 0 15px #fff;}
+.lesson {
+  display:none; text-align:left; opacity:0; transition:opacity 0.8s ease-in-out;
+  background: rgba(255,255,255,0.1); backdrop-filter: blur(15px);
+  padding:1.8rem; border-radius:25px; box-shadow:0 8px 25px rgba(0,0,0,0.5); margin-bottom:1.5rem;
+}
+.lesson.active {display:block; opacity:1;}
+textarea {width:100%; height:180px; border-radius:12px; padding:1rem; background:rgba(255,255,255,0.1); color:#fff; border:none; resize:vertical;}
+pre {background: rgba(255,255,255,0.05); padding:1rem; border-radius:12px; overflow-x:auto; font-size:0.95rem; color:#fff;}
+code{color:#fff;}
+iframe{width:100%; height:220px; border:none; margin-top:1rem; border-radius:15px;}
+.notes, .extra {background: rgba(255,255,255,0.12); padding:0.8rem; border-radius:15px; margin-top:0.5rem; color:#fff; font-style:italic;}
+.show-answer-btn{
+  padding:0.3rem 0.8rem; border:none; border-radius:10px; cursor:pointer;
+  background: rgba(255,255,255,0.15); color:#fff; font-weight:bold; transition:0.3s;
+}
+.show-answer-btn:hover{
+  background: linear-gradient(90deg,#ff6b6b,#feca57,#48dbfb); color:#333;
+}
+footer {
+  margin-top:2rem; padding:1.2rem; background: rgba(255,255,255,0.1);
+  backdrop-filter: blur(15px); border-radius:25px; width:100%; text-align:center; font-style:italic; color:#ffd700;
+  box-shadow:0 8px 25px rgba(0,0,0,0.4);
+}
+.mini-step textarea { margin-top:0.5rem;}
+.mini-step iframe { margin-top:0.8rem;}
+.mini-step .notes { margin-top:0.5rem; font-style:italic; color:#ffd700;}
+@keyframes fadeIn {from{opacity:0; transform:translateY(-20px);} to{opacity:1; transform:translateY(0);}}
+@keyframes rainbowText {
+  0%{color:#ff0000;}16%{color:#ff7f00;}32%{color:#ffff00;}48%{color:#00ff00;}64%{color:#0000ff;}80%{color:#4b0082;}100%{color:#8f00ff;}
+}
+@media(max-width:600px){.tabs{flex-direction:column;}}
+</style>
+</head>
+<body>
+
+<!-- Floating Shapes -->
+<div class="shape" style="width:40px;height:40px;background:#ffd700;top:10%;left:15%;animation-duration:6s;"></div>
+<div class="shape" style="width:30px;height:30px;background:#00ffff;top:50%;left:70%;animation-duration:8s;"></div>
+<div class="shape" style="width:50px;height:50px;background:#ff00ff;top:80%;left:40%;animation-duration:10s;"></div>
+<div class="shape" style="width:25px;height:25px;background:#ffffff;top:20%;left:50%;animation-duration:12s;"></div>
+
+<div class="container">
+<header>
+<h1>WebLearn Interactive Classroom</h1>
+<p>Program Owner: <strong>Oyibo Abdulganiu</strong></p>
+</header>
+
+<!-- Login Section -->
+<section class="form-section" id="loginSection">
+<h2>Welcome!</h2>
+<p>Enter your details to join the class</p>
+<input type="text" id="firstName" placeholder="First Name">
+<input type="text" id="secondName" placeholder="Second Name">
+<input type="text" id="username" placeholder="Username">
+<button onclick="enterClass()">Enter Class</button>
+</section>
+
+<!-- Greeting -->
+<div id="greetingContainer">
+<img id="userAvatar" src="https://i.pravatar.cc/80" alt="User Avatar">
+<div>
+<p id="greetingMessage"></p>
+<span id="userBadge">WebLearner</span>
+</div>
+</div>
+
+<!-- Lessons -->
+<section class="class-section" id="classSection">
+<div class="tabs">
+<button class="tab-btn active" data-tab="htmlLesson">HTML</button>
+<button class="tab-btn" data-tab="cssLesson">CSS</button>
+<button class="tab-btn" data-tab="jsLesson">JavaScript</button>
+<button class="tab-btn" data-tab="miniLesson">Mini Lessons</button>
+<button class="tab-btn" data-tab="quizSection">Mini Quiz</button>
+</div>
+
+<!-- HTML Editor -->
+<div class="lesson active" id="htmlLesson">
+<h3>HTML Editor</h3>
+<textarea id="htmlCodeEditor">&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+  &lt;head&gt;&lt;/head&gt;
+  &lt;body&gt;Hello World!&lt;/body&gt;
+&lt;/html&gt;</textarea>
+<iframe id="htmlPreview"></iframe>
+<div class="notes">HTML structures your webpage. <code>&lt;body&gt;</code> contains visible content.</div>
+</div>
+
+<!-- CSS Editor -->
+<div class="lesson" id="cssLesson">
+<h3>CSS Editor</h3>
+<textarea id="cssCodeEditor">body { background-color: lightblue; font-family: Arial; }</textarea>
+<iframe id="cssPreview"></iframe>
+<div class="notes">CSS styles HTML elements like colors, fonts, spacing.</div>
+</div>
+
+<!-- JS Editor -->
+<div class="lesson" id="jsLesson">
+<h3>JavaScript Editor</h3>
+<textarea id="jsCodeEditor">alert('Welcome to WebLearn!');</textarea>
+<iframe id="jsPreview"></iframe>
+<div class="notes">JavaScript adds interactivity to the page.</div>
+</div>
+
+<!-- Mini Lessons -->
+<div class="lesson" id="miniLesson">
+<h3>Interactive Mini Lessons</h3>
+
+<div class="mini-step">
+<h4>Lesson 1: Create a Heading & Paragraph</h4>
+<p>Type HTML code below:</p>
+<textarea class="mini-editor" data-preview="preview1">&lt;h1&gt;Hello WebLearn!&lt;/h1&gt;
+&lt;p&gt;This is your first paragraph.&lt;/p&gt;</textarea>
+<iframe id="preview1"></iframe>
+<div class="notes">Tip: Use <code>&lt;h1&gt;</code> for heading, <code>&lt;p&gt;</code> for paragraph.</div>
+</div>
+
+<div class="mini-step">
+<h4>Lesson 2: Style Your Heading</h4>
+<p>Type CSS code below:</p>
+<textarea class="mini-editor" data-preview="preview2">h1 { color: #ff6b6b; text-align:center; }</textarea>
+<iframe id="preview2" srcdoc="&lt;h1&gt;Hello WebLearn!&lt;/h1&gt;"></iframe>
+<div class="notes">Tip: Change color, font-size, text-align, etc.</div>
+</div>
+
+<div class="mini-step">
+<h4>Lesson 3: Make a Button Interactive</h4>
+<p>Type JS code below:</p>
+<textarea class="mini-editor" data-preview="preview3">&lt;button onclick="alert('Hello!')"&gt;Click Me&lt;/button&gt;</textarea>
+<iframe id="preview3"></iframe>
+<div class="notes">Tip: Use <code>alert()</code> to show a message when button is clicked.</div>
+</div>
+</div>
+
+<!-- Quiz with Inline Answers -->
+<div class="lesson" id="quizSection">
+<h3>Mini Quiz</h3>
+<div class="quiz-question" style="display:flex; align-items:center; justify-content:space-between; margin-bottom:1rem;">
+  <span>1. HTML: Which tag contains visible content?</span>
+  <button class="show-answer-btn" onclick="toggleAnswer(this, 'body')">Show Answer</button>
+  <span class="answer" style="margin-left:10px; font-weight:bold; display:none; color:#ffd700;"></span>
+</div>
+<div class="quiz-question" style="display:flex; align-items:center; justify-content:space-between; margin-bottom:1rem;">
+  <span>2. CSS: Which property changes text color?</span>
+  <button class="show-answer-btn" onclick="toggleAnswer(this, 'color')">Show Answer</button>
+  <span class="answer" style="margin-left:10px; font-weight:bold; display:none; color:#ffd700;"></span>
+</div>
+<div class="quiz-question" style="display:flex; align-items:center; justify-content:space-between; margin-bottom:1rem;">
+  <span>3. JS: Which method shows a popup message?</span>
+  <button class="show-answer-btn" onclick="toggleAnswer(this, 'alert()')">Show Answer</button>
+  <span class="answer" style="margin-left:10px; font-weight:bold; display:none; color:#ffd700;"></span>
+</div>
+</div>
+
+</section>
+
+<footer>WebLearn Classroom | Program Owner: <strong>Oyibo Abdulganiu</strong></footer>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+<script>
+// Login & Greeting
+function enterClass(){
+  const firstName=document.getElementById("firstName").value;
+  if(!firstName.trim()){alert("Enter your name!"); return;}
+  document.getElementById("loginSection").style.display="none";
+  document.getElementById("greetingContainer").style.display="flex";
+  document.getElementById("classSection").style.display="block";
+  document.getElementById("greetingMessage").innerHTML=`✨ Hello, <span class="username">${firstName}</span>! Welcome to WebLearn! ✨`;
+  document.getElementById("userAvatar").src=`https://i.pravatar.cc/80?u=${firstName}`;
+}
+
+// Tabs
+const tabButtons=document.querySelectorAll(".tab-btn");
+const lessons=document.querySelectorAll(".lesson");
+tabButtons.forEach(btn=>{
+  btn.addEventListener("click",()=>{
+    tabButtons.forEach(b=>b.classList.remove("active"));
+    btn.classList.add("active");
+    lessons.forEach(l=>l.classList.remove("active"));
+    document.getElementById(btn.dataset.tab).classList.add("active");
+  });
+});
+
+// Live Auto-Update Editors
+function updateHTML() { document.getElementById("htmlPreview").srcdoc = document.getElementById("htmlCodeEditor").value; }
+function updateCSS() { 
+  const html = document.getElementById("htmlCodeEditor").value;
+  const css = "<style>"+document.getElementById("cssCodeEditor").value+"</style>";
+  document.getElementById("cssPreview").srcdoc = css + html; 
+}
+function updateJS() { 
+  const html = document.getElementById("htmlCodeEditor").value;
+  const js = "<script>"+document.getElementById("jsCodeEditor").value+"<\/script>";
+  document.getElementById("jsPreview").srcdoc = html + js;
+}
+document.getElementById("htmlCodeEditor").addEventListener("input", updateHTML);
+document.getElementById("cssCodeEditor").addEventListener("input", updateCSS);
+document.getElementById("jsCodeEditor").addEventListener("input", updateJS);
+
+// Mini Lessons Live Update
+document.querySelectorAll('.mini-editor').forEach(editor => {
+    const previewId = editor.dataset.preview;
+    const previewFrame = document.getElementById(previewId);
+    function updatePreview() { previewFrame.srcdoc = editor.value; }
+    editor.addEventListener('input', updatePreview);
+    updatePreview();
+});
+
+// Toggle Quiz Answers
+function toggleAnswer(button, answerText){
+  const answerSpan = button.nextElementSibling;
+  if(answerSpan.style.display === "none"){
+    answerSpan.style.display = "inline";
+    answerSpan.textContent = answerText;
+    button.textContent = "Hide Answer";
+  } else {
+    answerSpan.style.display = "none";
+    button.textContent = "Show Answer";
+  }
+}
+</script>
+</body>
+</html>
